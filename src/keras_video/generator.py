@@ -62,7 +62,7 @@ class VideoFrameGenerator(Sequence):
             split_test: float = None,
             split_val: float = None,
             nb_channel: int = 3,
-            glob_pattern: str = './videos/{classname}/*.avi',
+            glob_pattern: str = './videos/{classname}/*.tif',
             use_headers: bool = True,
             *args,
             **kwargs):
@@ -385,7 +385,7 @@ class VideoFrameGenerator(Sequence):
         return classname
 
     def _get_frames(self, video, nbframe, shape, force_no_headers=False):
-        cap = cv.VideoCapture(video)
+        _,cap = cv.imreadmulti(video, [], cv.IMREAD_ANYDEPTH)
         total_frames = self.count_frames(cap, video, force_no_headers)
         orig_total = total_frames
         if total_frames % 2 != 0:
