@@ -223,7 +223,8 @@ class VideoFrameGenerator(Sequence):
             # TODO: we're unable to use CAP_PROP_POS_FRAME here
             # so we open a new capture to not change the
             # pointer position of "cap"
-            c = cv.VideoCapture(name)
+            #c = cv.VideoCapture(name)
+            _,c = cv.imreadmulti(name, [], cv.IMREAD_ANYDEPTH)
             while True:
                 grabbed, frame = c.read()
                 if not grabbed:
