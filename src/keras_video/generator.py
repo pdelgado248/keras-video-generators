@@ -227,10 +227,11 @@ class VideoFrameGenerator(Sequence):
             # so we open a new capture to not change the
             # pointer position of "cap"
             c = cv.VideoCapture(name)
+            #_,c = cv.imreadmulti(name, [], cv.IMREAD_ANYDEPTH)
             while True:
                 grabbed, frame = c.read()
                 if not grabbed:
-                    # rewind and stop
+                     rewind and stop
                     break
                 total += 1
 
@@ -389,7 +390,13 @@ class VideoFrameGenerator(Sequence):
 
     def _get_frames(self, video, nbframe, shape, force_no_headers=False):
         cap = cv.VideoCapture(video)
-        total_frames = self.count_frames(cap, video, force_no_headers)
+        #_,cap = cv.imreadmulti(video, [], cv.IMREAD_ANYDEPTH)
+        
+        print(type(cap))
+        print(cap.shape)
+        
+        #total_frames = self.count_frames(cap, video, force_no_headers)
+        total_frames
         orig_total = total_frames
         if total_frames % 2 != 0:
             total_frames += 1
@@ -403,7 +410,7 @@ class VideoFrameGenerator(Sequence):
         while True:
             grabbed, frame = cap.read()
             if not grabbed:
-                break
+               break
 
             frame_i += 1
             if frame_i == 1 or frame_i % frame_step == 0 or frame_i == orig_total:
