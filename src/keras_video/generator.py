@@ -395,8 +395,7 @@ class VideoFrameGenerator(Sequence):
         #print(type(cap))
         #print(cap.shape)
         
-        #total_frames = self.count_frames(cap, video, force_no_headers)
-        total_frames
+        total_frames = self.count_frames(cap, video, force_no_headers)
         orig_total = total_frames
         if total_frames % 2 != 0:
             total_frames += 1
