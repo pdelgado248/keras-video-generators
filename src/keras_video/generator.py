@@ -231,7 +231,7 @@ class VideoFrameGenerator(Sequence):
             while True:
                 grabbed, frame = c.read()
                 if not grabbed:
-                     rewind and stop
+                    rewind and stop
                     break
                 total += 1
 
@@ -410,7 +410,7 @@ class VideoFrameGenerator(Sequence):
         while True:
             grabbed, frame = cap.read()
             if not grabbed:
-               break
+                break
 
             frame_i += 1
             if frame_i == 1 or frame_i % frame_step == 0 or frame_i == orig_total:
