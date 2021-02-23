@@ -392,8 +392,8 @@ class VideoFrameGenerator(Sequence):
         cap = cv.VideoCapture(video)
         #_,cap = cv.imreadmulti(video, [], cv.IMREAD_ANYDEPTH)
         
-        print(type(cap))
-        print(cap.shape)
+        #print(type(cap))
+        #print(cap.shape)
         
         #total_frames = self.count_frames(cap, video, force_no_headers)
         total_frames
