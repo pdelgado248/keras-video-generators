@@ -231,7 +231,7 @@ class VideoFrameGenerator(Sequence):
             while True:
                 grabbed, frame = c.read()
                 if not grabbed:
-                     rewind and stop
+                    rewind and stop
                     break
                 total += 1
 
