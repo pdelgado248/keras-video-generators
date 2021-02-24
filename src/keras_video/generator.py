@@ -414,9 +414,11 @@ class VideoFrameGenerator(Sequence):
             frame_i += 1
             if frame_i == 1 or frame_i % frame_step == 0 or frame_i == orig_total:
                 # resize
-                print('type(frame) before converting no np: ',type(frame))
+                print('type(frame) before converting to np: ',type(frame))
+                print('frame.shape before resizing: ',frame.shape)
                 frame = cv.resize(frame, shape)
-
+                print('frame.shape after resizing with',shape,': ',frame.shape)
+                
                 # use RGB or Grayscale ?
                 if self.nb_channel == 3:
                     frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
