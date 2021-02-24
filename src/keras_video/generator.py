@@ -424,7 +424,8 @@ class VideoFrameGenerator(Sequence):
 
                 # to np
                 frame = img_to_array(frame) * self.rescale
-
+                
+                print('frame.shape: ',frame.shape)
                 # keep frame
                 frames.append(frame)
 
