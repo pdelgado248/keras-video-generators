@@ -56,7 +56,7 @@ class VideoFrameGenerator(Sequence):
             classes: list = None,
             batch_size: int = 16,
             use_frame_cache: bool = False,
-            target_shape: tuple = (224, 224, 3),
+            target_shape: tuple = (224, 224),
             shuffle: bool = True,
             transformation: ImageDataGenerator = None,
             split_test: float = None,
@@ -92,8 +92,8 @@ class VideoFrameGenerator(Sequence):
                      "pattern is correct.\n"
                      "See https://docs.python.org/3/library/glob.html")
 
-        # shape size should be 3
-        assert len(target_shape) == 3
+        # shape size should be 2
+        assert len(target_shape) == 2
 
         # split factor should be a propoer value
         if split_val is not None:
