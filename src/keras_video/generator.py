@@ -389,8 +389,13 @@ class VideoFrameGenerator(Sequence):
     def _get_frames(self, video, nbframe, shape, force_no_headers=False):
         _,cap = cv.imreadmulti(video, [], cv.IMREAD_ANYDEPTH)
         cap=np.array(cap)
+        print(video)
+        print('video.shape: ',cap.shape)
         
         total_frames = self.count_frames(cap, video, force_no_headers)
+        
+        print('total_frames: ', total_frames)
+        
         orig_total = total_frames
         if total_frames % 2 != 0:
             total_frames += 1
