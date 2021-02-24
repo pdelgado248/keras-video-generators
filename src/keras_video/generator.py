@@ -389,12 +389,12 @@ class VideoFrameGenerator(Sequence):
     def _get_frames(self, video, nbframe, shape, force_no_headers=False):
         _,cap = cv.imreadmulti(video, [], cv.IMREAD_ANYCOLOR)
         cap=np.array(cap)
-        print(video)
-        print('video.shape: ',cap.shape)
+        #print(video)
+        #print('video.shape: ',cap.shape)
         
         total_frames = self.count_frames(cap, video, force_no_headers)
         
-        print('total_frames: ', total_frames)
+        #print('total_frames: ', total_frames)
         
         orig_total = total_frames
         if total_frames % 2 != 0:
@@ -419,7 +419,7 @@ class VideoFrameGenerator(Sequence):
             frame_i += 1
             if frame_i == 1 or frame_i % frame_step == 0 or frame_i == orig_total:
                 # resize
-                print('frame.shape: ',frame.shape)
+                #print('frame.shape: ',frame.shape)
                 frame = cv.resize(frame, shape)
                 
                 frame=np.flip(frame,2)
