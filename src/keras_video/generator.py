@@ -225,7 +225,7 @@ class VideoFrameGenerator(Sequence):
         #    # so we open a new capture to not change the
         #    # pointer position of "cap"
         #    #c = cv.VideoCapture(name)
-        #    _,c = cv.imreadmulti(name, [], cv.IMREAD_ANYDEPTH)
+        #    _,c = cv.imreadmulti(name, [], cv.IMREAD_ANYCOLOR)
         #    while True:
         #        grabbed, frame = c.read()
         #        if not grabbed:
@@ -387,7 +387,7 @@ class VideoFrameGenerator(Sequence):
         return classname
 
     def _get_frames(self, video, nbframe, shape, force_no_headers=False):
-        _,cap = cv.imreadmulti(video, [], cv.IMREAD_ANYDEPTH)
+        _,cap = cv.imreadmulti(video, [], cv.IMREAD_ANYCOLOR)
         cap=np.array(cap)
         print(video)
         print('video.shape: ',cap.shape)
