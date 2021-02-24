@@ -421,7 +421,9 @@ class VideoFrameGenerator(Sequence):
                 # resize
                 print('frame.shape: ',frame.shape)
                 frame = cv.resize(frame, shape)
-
+                
+                frame=np.flip(frame,2)
+                
                 # use RGB or Grayscale ?
                 #if self.nb_channel == 3:
                 #    frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
