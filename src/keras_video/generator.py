@@ -56,7 +56,7 @@ class VideoFrameGenerator(Sequence):
             classes: list = None,
             batch_size: int = 16,
             use_frame_cache: bool = False,
-            target_shape: tuple = (224, 224),
+            target_shape: tuple = (224, 224, 3),
             shuffle: bool = True,
             transformation: ImageDataGenerator = None,
             split_test: float = None,
@@ -92,8 +92,8 @@ class VideoFrameGenerator(Sequence):
                      "pattern is correct.\n"
                      "See https://docs.python.org/3/library/glob.html")
 
-        # shape size should be 2
-        assert len(target_shape) == 2
+        # shape size should be 3
+        assert len(target_shape) == 3
 
         # split factor should be a propoer value
         if split_val is not None:
@@ -215,22 +215,23 @@ class VideoFrameGenerator(Sequence):
         if not force_no_headers and name in self._framecounters:
             return self._framecounters[name]
 
-        total = cap.get(cv.CAP_PROP_FRAME_COUNT)
-
-        if force_no_headers or total < 0:
-            # headers not ok
-            total = 0
-            # TODO: we're unable to use CAP_PROP_POS_FRAME here
-            # so we open a new capture to not change the
-            # pointer position of "cap"
-            #c = cv.VideoCapture(name)
-            _,c = cv.imreadmulti(name, [], cv.IMREAD_ANYDEPTH)
-            while True:
-                grabbed, frame = c.read()
-                if not grabbed:
-                    # rewind and stop
-                    break
-                total += 1
+        #total = cap.get(cv.CAP_PROP_FRAME_COUNT)
+        total=len(cap)
+        
+        #if force_no_headers or total < 0:
+        #    # headers not ok
+        #    total = 0
+        #    # TODO: we're unable to use CAP_PROP_POS_FRAME here
+        #    # so we open a new capture to not change the
+        #    # pointer position of "cap"
+        #    #c = cv.VideoCapture(name)
+        #    _,c = cv.imreadmulti(name, [], cv.IMREAD_ANYDEPTH)
+        #    while True:
+        #        grabbed, frame = c.read()
+        #        if not grabbed:
+        #            # rewind and stop
+        #            break
+        #        total += 1
 
         # keep the result
         self._framecounters[name] = total
@@ -357,7 +358,7 @@ class VideoFrameGenerator(Sequence):
             # apply transformation
             if transformation is not None:
                 frames = [self.transformation.apply_transform(
-                    frame, transformation) for frame in frames]
+                    self.transformation.standardize(frame), transformation) for frame in frames]
 
             # add the sequence in batch
             images.append(frames)
@@ -387,6 +388,8 @@ class VideoFrameGenerator(Sequence):
 
     def _get_frames(self, video, nbframe, shape, force_no_headers=False):
         _,cap = cv.imreadmulti(video, [], cv.IMREAD_ANYDEPTH)
+        cap=np.array(cap)
+        
         total_frames = self.count_frames(cap, video, force_no_headers)
         orig_total = total_frames
         if total_frames % 2 != 0:
@@ -398,25 +401,33 @@ class VideoFrameGenerator(Sequence):
         frames = []
         frame_i = 0
 
+        
         while True:
-            grabbed, frame = cap.read()
+            
+            #grabbed, frame = cap.read()
+            grabbed=True
+            frame=cap[frame_i]
+            
             if not grabbed:
                 break
 
             frame_i += 1
             if frame_i == 1 or frame_i % frame_step == 0 or frame_i == orig_total:
                 # resize
+                print('frame.shape: ',frame.shape)
                 frame = cv.resize(frame, shape)
 
                 # use RGB or Grayscale ?
-                if self.nb_channel == 3:
-                    frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
-                else:
-                    frame = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
+                #if self.nb_channel == 3:
+                #    frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+                #else:
+                #    frame = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
 
                 # to np
-                frame = img_to_array(frame) * self.rescale
-
+                #frame = img_to_array(frame) * self.rescale
+                
+                frame=frame*self.rescale
+                
                 # keep frame
                 frames.append(frame)
 
