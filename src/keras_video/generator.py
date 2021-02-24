@@ -434,7 +434,7 @@ class VideoFrameGenerator(Sequence):
             if len(frames) == nbframe:
                 break
 
-        cap.release()
+        #cap.release()
 
         if not force_no_headers and len(frames) != nbframe:
             # There is a problem here
