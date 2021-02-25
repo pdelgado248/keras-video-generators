@@ -332,7 +332,7 @@ class VideoFrameGenerator(Sequence):
         
         if self.elasticDeformation is True:
             self.seedN=[]
-            for _in range(self.files_count):
+            for _ in range(self.files_count):
                 self.seedN.append(np.random.randint(10000))
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
