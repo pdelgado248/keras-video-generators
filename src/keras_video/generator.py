@@ -236,7 +236,7 @@ class VideoFrameGenerator(Sequence):
             converted_img = elasticdeform.deform_grid(image, displacement,axis=(0, 1))
         else:
             converted_img=image
-        
+            print('converted_img.shape: ',converted_img.shape)
         return converted_img
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      
