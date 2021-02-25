@@ -19,6 +19,10 @@ from keras.utils import Sequence
 from keras.preprocessing.image import \
     ImageDataGenerator, img_to_array
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Needs pip install elasticdeform first
+import elasticdeform
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~4
 
 class VideoFrameGenerator(Sequence):
     """
@@ -64,6 +68,12 @@ class VideoFrameGenerator(Sequence):
             nb_channel: int = 3,
             glob_pattern: str = './videos/{classname}/*.tif',
             use_headers: bool = True,
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            elasticDef=False,
+            elasticDefScale=25,
+            elasticDefControlPoints1=3,
+            elasticDefControlPoints2=3,
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             *args,
             **kwargs):
 
@@ -126,7 +136,15 @@ class VideoFrameGenerator(Sequence):
         self.files = []
         self.validation = []
         self.test = []
-
+        
+        #~~~~~~~~~~~~~~~~~~
+        self.elasticDeformation=elasticDef
+        self.elasticDeformationScale=elasticDefScale
+        self.controlPoints1=elasticDefControlPoints1
+        self.controlPoints2=elasticDefControlPoints2
+        self.seedN=0
+        #~~~~~~~~~~~~~~~~~~~~~~~~
+        
         _validation_data = kwargs.get('_validation_data', None)
         _test_data = kwargs.get('_test_data', None)
 
@@ -208,7 +226,23 @@ class VideoFrameGenerator(Sequence):
             self.classes_count,
             self.files_count,
             kind))
-
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def elDeform(self,image)
+        if self.elasticdeform==True:
+            np.random.seed(self.seedN)
+            
+            displacement = numpy.random.randn(2, self.controlPoints1, self.controlPoints2) * self.elasticDeformationScale
+            converted_img = elasticdeform.deform_grid(image, displacement,axis=(0, 1))
+        else:
+            converted_img=image
+        
+        return converted_img
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     
+    
+    
+    
     def count_frames(self, cap, name, force_no_headers=False):
         """ Count number of frame for video
         if it's not possible with headers """
@@ -293,7 +327,12 @@ class VideoFrameGenerator(Sequence):
 
     def on_epoch_end(self):
         """ Called by Keras after each epoch """
-
+        
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        if self.elasticDeformation is True:
+            self.seedN=np.random.randint(10000)
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
         if self.transformation is not None:
             self._random_trans = []
             for _ in range(self.files_count):
@@ -355,10 +394,11 @@ class VideoFrameGenerator(Sequence):
             else:
                 frames = self.__frame_cache[video]
 
-            # apply transformation
+            # apply transformation                
+            
             if transformation is not None:
-                frames = [self.transformation.apply_transform(
-                    self.transformation.standardize(frame), transformation) for frame in frames]
+                frames = [self.transformation.apply_transform(self.elDeform(
+                    self.transformation.standardize(frame)), transformation) for frame in frames]
 
             # add the sequence in batch
             images.append(frames)
