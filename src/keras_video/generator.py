@@ -228,7 +228,7 @@ class VideoFrameGenerator(Sequence):
             kind))
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def elDeform(self,image)
+    def elDeform(self,image):
         if self.elasticdeform==True:
             np.random.seed(self.seedN)
             
