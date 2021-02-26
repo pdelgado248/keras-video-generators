@@ -19,6 +19,10 @@ from keras.utils import Sequence
 from keras.preprocessing.image import \
     ImageDataGenerator, img_to_array
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Needs pip install elasticdeform first
+import elasticdeform
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~4
 
 class VideoFrameGenerator(Sequence):
     """
@@ -64,6 +68,12 @@ class VideoFrameGenerator(Sequence):
             nb_channel: int = 3,
             glob_pattern: str = './videos/{classname}/*.avi',
             use_headers: bool = True,
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            elasticDef=False,
+            elasticDefScale=25,
+            elasticDefControlPoints1=3,
+            elasticDefControlPoints2=3,
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~        
             *args,
             **kwargs):
 
@@ -127,6 +137,14 @@ class VideoFrameGenerator(Sequence):
         self.validation = []
         self.test = []
 
+        #~~~~~~~~~~~~~~~~~~
+        self.elasticDeformation=elasticDef
+        self.elasticDeformationScale=elasticDefScale
+        self.controlPoints1=elasticDefControlPoints1
+        self.controlPoints2=elasticDefControlPoints2
+        self.seedN=0
+        #~~~~~~~~~~~~~~~~~~~~~~~~
+        
         _validation_data = kwargs.get('_validation_data', None)
         _test_data = kwargs.get('_test_data', None)
 
@@ -176,8 +194,8 @@ class VideoFrameGenerator(Sequence):
                         # remove test from train
                         indexes = np.array(
                             [i for i in indexes if i not in val_test])
-                        print('Test indexes',val_test)
-                        print([files[i] for i in val_test])
+                        #print('Test indexes',val_test)
+                        #print([files[i] for i in val_test])
                         self.test += [files[i] for i in val_test]
                         info.append("test count: %d" % nbtest)
 
@@ -212,6 +230,19 @@ class VideoFrameGenerator(Sequence):
             self.files_count,
             kind))
 
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def elDeform(self,seedN,image):
+        if self.elasticDeformation==True:
+            np.random.seed(seedN)
+            
+            displacement = np.random.randn(2, self.controlPoints1, self.controlPoints2) * self.elasticDeformationScale
+            converted_img = elasticdeform.deform_grid(image, displacement,axis=(0, 1))
+        else:
+            converted_img=image
+            print('converted_img.shape: ',converted_img.shape)
+        return converted_img
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
     def count_frames(self, cap, name, force_no_headers=False):
         """ Count number of frame for video
         if it's not possible with headers """
@@ -295,6 +326,15 @@ class VideoFrameGenerator(Sequence):
 
     def on_epoch_end(self):
         """ Called by Keras after each epoch """
+        
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        #Setting a specific random seed for each video (between 0 and 2**32-1). When processing frames from that video, this seed will
+        #be called so that the random function produces a specific result, the same for all frames.
+        if self.elasticDeformation is True:
+            self.seedN=[]
+            for _ in range(self.files_count):
+                self.seedN.append(np.random.randint(2**32))
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         if self.transformation is not None:
             self._random_trans = []
@@ -331,7 +371,14 @@ class VideoFrameGenerator(Sequence):
             # prepare a transformation if provided
             if self.transformation is not None:
                 transformation = self._random_trans[i]
-
+                
+                
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            #Prepare a random Seed (defined previously) for the elastic deformation of the current video
+            if self.elasticDeformation is True:
+                seedN=self.seedN[i]
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            
             video = self.files[i]
             classname = self._get_classname(video)
 
@@ -359,9 +406,13 @@ class VideoFrameGenerator(Sequence):
 
             # apply transformation
             if transformation is not None:
-                frames = [self.transformation.apply_transform(
-                    self.transformation.standardize(frame), transformation) for frame in frames]
-
+                #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                #Included as an extra: the self.elDeform function using seedN, applied to the each frame
+                #just after standarization
+                frames = [self.transformation.apply_transform(self.elDeform(seedN,
+                    self.transformation.standardize(frame)), transformation) for frame in frames]
+                #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                
             # add the sequence in batch
             images.append(frames)
             labels.append(label)
