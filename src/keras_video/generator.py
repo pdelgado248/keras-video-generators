@@ -374,8 +374,8 @@ class VideoFrameGenerator(Sequence):
                 
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             #Prepare a random Seed (defined previously) for the elastic deformation of the current video
-            if self.elasticDeformation is True:
-                seedN=self.seedN[i]
+            #if self.elasticDeformation is True:
+            seedN=self.seedN[i]
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
             video = self.files[i]
