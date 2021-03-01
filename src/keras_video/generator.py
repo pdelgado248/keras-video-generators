@@ -330,10 +330,9 @@ class VideoFrameGenerator(Sequence):
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         #Setting a specific random seed for each video (between 0 and 2**32-1). When processing frames from that video, this seed will
         #be called so that the random function produces a specific result, the same for all frames.
-        if self.elasticDeformation is True:
-            self.seedN=[]
-            for _ in range(self.files_count):
-                self.seedN.append(np.random.randint(2**32))
+        self.seedN=[]
+        for _ in range(self.files_count):
+            self.seedN.append(np.random.randint(2**32))
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         if self.transformation is not None:
