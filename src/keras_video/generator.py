@@ -328,12 +328,10 @@ class VideoFrameGenerator(Sequence):
     def on_epoch_end(self):
         """ Called by Keras after each epoch """
         
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        
-        if self.elasticDeformation is True:
-            self.seedN=[]
-            for _ in range(self.files_count):
-                self.seedN.append(np.random.randint(10000))
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   
+        self.seedN=[]
+        for _ in range(self.files_count):
+            self.seedN.append(np.random.randint(10000))
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
         if self.transformation is not None:
