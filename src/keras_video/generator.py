@@ -228,9 +228,9 @@ class VideoFrameGenerator(Sequence):
             kind))
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def elDeform(self,image):
+    def elDeform(self,seedN,image):
         if self.elasticDeformation==True:
-            np.random.seed(self.seedN)
+            np.random.seed(seedN)
             
             displacement = np.random.randn(2, self.controlPoints1, self.controlPoints2) * self.elasticDeformationScale
             converted_img = elasticdeform.deform_grid(image, displacement,axis=(0, 1))
@@ -372,9 +372,9 @@ class VideoFrameGenerator(Sequence):
                 
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             #Prepare a random Seed for the elastic deformation
-            if self.elasticDeformation is True:
-                seedN=self.seedN[i]
-
+            seedN=self.seedN[i]
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            
             video = self.files[i]
             classname = self._get_classname(video)
 
@@ -403,7 +403,7 @@ class VideoFrameGenerator(Sequence):
             # apply transformation                
             
             if transformation is not None:
-                frames = [self.transformation.apply_transform(self.elDeform(
+                frames = [self.transformation.apply_transform(self.elDeform(seedN,
                     self.transformation.standardize(frame)), transformation) for frame in frames]
 
             # add the sequence in batch
