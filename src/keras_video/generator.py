@@ -243,7 +243,7 @@ class VideoFrameGenerator(Sequence):
     from scipy.ndimage.interpolation import map_coordinates
     from scipy.ndimage.filters import gaussian_filter
 
-    def elDeform(self,random_state=seedN,image):
+    def elDeform(self,random_state,image):
         """Elastic deformation of images as described in [Simard2003]_.
         .. [Simard2003] Simard, Steinkraus and Platt, "Best Practices for
            Convolutional Neural Networks applied to Visual Document Analysis", in
