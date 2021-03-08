@@ -73,6 +73,8 @@ class VideoFrameGenerator(Sequence):
             elasticDefScale=25,
             elasticDefControlPoints1=3,
             elasticDefControlPoints2=3,
+            seedVal=735,
+            seedTest=10300,
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             *args,
             **kwargs):
@@ -143,6 +145,9 @@ class VideoFrameGenerator(Sequence):
         self.controlPoints1=elasticDefControlPoints1
         self.controlPoints2=elasticDefControlPoints2
         self.seedN=0
+        
+        self.seedVal=seedVal
+        self.seedTest=seedTest
         #~~~~~~~~~~~~~~~~~~~~~~~~
         
         _validation_data = kwargs.get('_validation_data', None)
@@ -175,6 +180,10 @@ class VideoFrameGenerator(Sequence):
                         nbtrain = len(files) - nbval
 
                         # get some sample for validation_data
+                        #~~~~
+                        np.random.seed(self.seedVal)
+                        #~~~~
+                        
                         val = np.random.permutation(indexes)[:nbval]
 
                         # remove validation from train
@@ -188,6 +197,10 @@ class VideoFrameGenerator(Sequence):
                         nbtrain = len(files) - nbval - nbtest
 
                         # get some sample for test_data
+                        #~~~~~~~~~~
+                        np.random.seed(self.seedTest)
+                        #~~~~~~~~~                       
+                        
                         val_test = np.random.permutation(indexes)[:nbtest]
 
                         # remove test from train
